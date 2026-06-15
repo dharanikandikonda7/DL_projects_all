@@ -1,6 +1,6 @@
-streamlit
-tensorflow
-scikit-learn
-numpy
-pandas
-joblib
+streamlit==1.35.0
+tensorflow==2.16.1
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==2.2.2
+joblib==1.4.2
