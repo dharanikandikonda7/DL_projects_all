@@ -1,83 +1,81 @@
 import streamlit as st
-from collections import defaultdict, Counter
-import re
+import difflib
 
 st.set_page_config(
-    page_title="RNN Next Word Predictor",
-    page_icon="🔤"
+    page_title="Smart Reply Assistant",
+    page_icon="💬"
 )
 
-st.title("🔤 RNN Next Word Predictor")
+st.title("💬 Smart Reply Assistant (RNN Concept)")
 
-st.write(
-    """
-    This project demonstrates the concept behind Recurrent Neural Networks (RNNs):
-    predicting the next word from a sequence of previous words.
-    """
+st.write("""
+Generate quick responses for messages using sequence-based text matching.
+This demonstrates the idea behind conversational sequence modeling used in RNN applications.
+""")
+
+reply_database = {
+    "hi": "Hello! How can I help you today?",
+    "hello": "Hi! Hope you're having a great day.",
+    "how are you": "I'm doing well. Thanks for asking!",
+    "are you available tomorrow": "Yes, I am available tomorrow.",
+    "can we meet tomorrow": "Sure, let's schedule a meeting.",
+    "thank you": "You're welcome!",
+    "thanks": "Glad I could help.",
+    "good morning": "Good morning! Have a productive day.",
+    "good night": "Good night! Take care.",
+    "where are you": "I'm currently available online.",
+    "what is your name": "I'm your AI assistant.",
+    "can you help me": "Of course! Tell me what you need help with.",
+    "i need support": "I'd be happy to assist you.",
+    "when is the meeting": "Please check the latest schedule for meeting details.",
+    "send me details": "Sure, I'll share the details shortly.",
+    "what are your working hours": "Our working hours are 9 AM to 6 PM.",
+    "how much does it cost": "Please provide more details about the product or service."
+}
+
+user_input = st.text_area(
+    "Enter a message",
+    height=120,
+    placeholder="Example: Are you available tomorrow?"
 )
 
-corpus = """
-machine learning is transforming the world
-machine learning helps solve complex problems
-deep learning is a subset of machine learning
-artificial intelligence powers modern applications
-artificial intelligence and machine learning are related
-data science uses machine learning techniques
-neural networks are inspired by the human brain
-recurrent neural networks process sequential data
-rnn models are useful for language processing
-language models predict the next word
-streamlit makes deployment easy
-python is widely used in data science
-"""
+if st.button("Generate Reply"):
 
-words = re.findall(r'\w+', corpus.lower())
-
-word_pairs = defaultdict(list)
-
-for i in range(len(words) - 2):
-    key = (words[i], words[i + 1])
-    word_pairs[key].append(words[i + 2])
-
-st.subheader("Enter Two Words")
-
-text = st.text_input(
-    "Example: machine learning"
-)
-
-if st.button("Predict Next Word"):
-
-    tokens = re.findall(r'\w+', text.lower())
-
-    if len(tokens) < 2:
-        st.warning("Please enter at least two words.")
+    if not user_input.strip():
+        st.warning("Please enter a message.")
     else:
 
-        key = (tokens[-2], tokens[-1])
+        message = user_input.lower().strip()
 
-        if key in word_pairs:
+        matches = difflib.get_close_matches(
+            message,
+            reply_database.keys(),
+            n=1,
+            cutoff=0.3
+        )
 
-            predictions = Counter(word_pairs[key])
-
-            st.success("Possible Next Words")
-
-            for word, count in predictions.most_common(5):
-                st.write(
-                    f"• {word} ({count} occurrence)"
-                )
-
+        if matches:
+            response = reply_database[matches[0]]
         else:
-            st.error(
-                "No prediction available for this sequence."
+            response = (
+                "Thank you for your message. "
+                "I will review it and get back to you soon."
             )
+
+        st.subheader("Suggested Reply")
+        st.success(response)
 
 st.markdown("---")
 
-st.subheader("How This Relates to RNN")
+st.subheader("Applications")
 
 st.write("""
-- RNNs process text one word at a time.
-- They maintain information from previous words.
-- They are commonly used for next-word prediction.
-- Modern language models evolved from these ideas.
+- Customer Support
+- Email Reply Suggestions
+- WhatsApp Auto Replies
+- Chatbots
+- Helpdesk Automation
+
+RNNs are commonly used for sequence processing tasks such as text generation,
+conversation modeling, and response prediction.
 """)
